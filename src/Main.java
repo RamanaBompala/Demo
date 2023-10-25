@@ -1,17 +1,19 @@
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class Main {
-    private static final Map<Character, Integer> ROMAN_VALUES = new HashMap<>();
+    private static final Map<Character, Integer> ROMAN_VALUES = new LinkedHashMap<>();
+
     static {
-        ROMAN_VALUES.put('I', 1);
-        ROMAN_VALUES.put('V', 5);
-        ROMAN_VALUES.put('X', 10);
-        ROMAN_VALUES.put('L', 50);
-        ROMAN_VALUES.put('C', 100);
-        ROMAN_VALUES.put('D', 500);
         ROMAN_VALUES.put('M', 1000);
+        ROMAN_VALUES.put('D', 500);
+        ROMAN_VALUES.put('C', 100);
+        ROMAN_VALUES.put('L', 50);
+        ROMAN_VALUES.put('X', 10);
+        ROMAN_VALUES.put('V', 5);
+        ROMAN_VALUES.put('I', 1);
     }
+
     public static void main(String[] args) {
         int num = 1984;
         String romanNumeral = intToRoman(num);
@@ -28,18 +30,31 @@ public class Main {
         }
 
         StringBuilder roman = new StringBuilder();
-        int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
-        String[] symbols = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        for (Map.Entry<Character, Integer> entry : ROMAN_VALUES.entrySet()) {
+            char symbol = entry.getKey();
+            int value = entry.getValue();
 
-        for (int i = 0; i < values.length; i++) {
-            while (num >= values[i]) {
-                roman.append(symbols[i]);
-                num -= values[i];
+            while (num >= value) {
+                roman.append(symbol);
+                num -= value;
+            }
+
+            int nextIndex = ROMAN_VALUES.size() - 1;
+            for (int i = ROMAN_VALUES.size() - 1; i >= 0; i--) {
+                char nextSymbol = (char) ROMAN_VALUES.keySet().toArray()[i];
+                int nextValue = ROMAN_VALUES.get(nextSymbol);
+
+                if (nextValue + value <= num) {
+                    roman.append(nextSymbol).append(symbol);
+                    num -= (nextValue - value);
+                    break;
+                }
             }
         }
 
         return roman.toString();
     }
+
     public static int romanToInt(String s) {
         int result = 0;
         int prevValue = 0;
@@ -59,6 +74,4 @@ public class Main {
 
         return result;
     }
-
 }
-
